@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd">
+
+	<!-- channel that 'trigger' requests to be sent to http -->
+	<int:channel id="http.out.channel" />
+	
+	<!-- channel where responses from http are listened for -->
+	<int:channel id="http.in.channel">
+		<int:queue capacity="10"/>
+	</int:channel>
+
+<!-- 	<int-http:outbound-gateway id="http-outbound-gateway" 
+		request-channel="http.out.channel"
+		url="http://localhost:8080/howdy"
+		http-method="GET"
+		expected-response-type="java.lang.String"
+		charset="UTF-8"
+		reply-channel="http.in.channel">
+	</int-http:outbound-gateway> -->
+	
+	<int-http:outbound-gateway id="http-outbound-gateway" 
+		request-channel="http.out.channel"
+		url="http://localhost:8080/howdy?message={msg}"
+		http-method="GET"
+		expected-response-type="java.lang.String"
+		charset="UTF-8"
+		reply-channel="http.in.channel">
+		<int-http:uri-variable name="msg" expression="payload"/>
+	</int-http:outbound-gateway>
+
+</beans>
